@@ -1,37 +1,18 @@
-from flask import Flask, request, render_template
-from rembg import remove
-from PIL import Image
-import io
+from fastapi import FastAPI, HTTPException
+from pytube import YouTube
 
-app = Flask(__name__)
+app = FastAPI()
 
-@app.route("/", methods=["GET", "POST"])
-def index():
-    if request.method == "POST":
-        if "file" not in request.files:
-            return "No file part"
-
-        file = request.files["file"]
-
-        if file.filename == "":
-            return "No selected file"
-
-        if file:
-            image = Image.open(file)
-            output_image = remove(image)
-
-            # Change the background (You'll need to customize this part)
-            # For example, let's save the image with a transparent background
-            output_image = output_image.convert("RGBA")
-
-            # Save the resulting image
-            output_buffer = io.BytesIO()
-            output_image.save(output_buffer, format="PNG")
-            output_bytes = output_buffer.getvalue()
-
-            return render_template("result.html", result_image=output_bytes)
-
-    return render_template("index.html")
-
+@app.get("/download/")
+async def download_video(link: str):
+    try:
+        yt = YouTube(link)
+        stream = yt.streams.get_highest_resolution()
+        download_url = stream.url
+        return {"download_link": download_url}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 if __name__ == "__main__":
-    app.run(debug=True)
+    import uvicorn
+
+    uvicorn.run(app, host="127.0.0.1", port=8000)
