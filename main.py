@@ -1,7 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from pytube import YouTube
+import logging
 
 app = FastAPI()
+
+logging.basicConfig(level=logging.ERROR)
 
 @app.get("/download/")
 async def download_video(link: str):
@@ -11,7 +14,9 @@ async def download_video(link: str):
         download_url = stream.url
         return {"download_link": download_url}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logging.error(f"Error processing request: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
 if __name__ == "__main__":
     import uvicorn
 
