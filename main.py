@@ -14,6 +14,7 @@ def download_video(link: str):
         download_url = stream.url
         return {"download_link": download_url}
     except Exception as e:
+        return e
         raise HTTPException(status_code=400, detail="Failed to process the video link.")
 
 if __name__ == "__main__":
