@@ -12,7 +12,7 @@ async def download_video(link: str):
         download_url = stream.url
         return {"download_link": download_url}
     except Exception as e:
-        return "no internet"
+        return e
         raise HTTPException(status_code=500, detail=str(e))
 if __name__ == "__main__":
     import uvicorn
