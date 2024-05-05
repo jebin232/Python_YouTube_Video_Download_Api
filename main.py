@@ -7,7 +7,7 @@ app = FastAPI()
 @app.get("/download/")
 async def download_video(link: str):
     try:
-        yt = YouTube(f"https://youtu.be/ywvh1UHVjVg?si={link}")
+        yt = YouTube(link)
         stream = yt.streams.get_highest_resolution()
         download_url = stream.url
         return {"download_link": download_url}
