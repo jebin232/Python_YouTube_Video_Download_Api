@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException, Depends
 from pytube import YouTube
 from fastapi_limiter import FastAPILimiter
-from fastapi_limiter.depends import RateLimiterDependency
 
 app = FastAPI()
 
