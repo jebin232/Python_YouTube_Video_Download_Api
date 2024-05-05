@@ -1,19 +1,24 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from pytube import YouTube
-import time
+from fastapi_limiter import FastAPILimiter
+from fastapi_limiter.depends import RateLimiterDependency
 
 app = FastAPI()
 
+# Configure rate limiting (for example, limit to 5 requests per minute)
+limiter = FastAPILimiter(key="ip", default_limits=["5/minute"])
+
 @app.get("/download/")
-async def download_video(link: str):
+@limiter.limit("5/minute")
+def download_video(link: str):
     try:
         yt = YouTube(link)
         stream = yt.streams.get_highest_resolution()
         download_url = stream.url
         return {"download_link": download_url}
     except Exception as e:
-        return e
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=400, detail="Failed to process the video link.")
+
 if __name__ == "__main__":
     import uvicorn
 
