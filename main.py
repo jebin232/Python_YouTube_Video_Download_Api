@@ -1,22 +1,21 @@
-from fastapi import FastAPI, HTTPException, Request
-from pydantic import BaseModel
+from flask import Flask, request, jsonify
 from pytube import YouTube
 
-app = FastAPI()
+app = Flask(__name__)
 
-class VideoLink(BaseModel):
-    link: str
+@app.route('/download', methods=['POST'])
+def download_video():
+    data = request.json
+    if 'link' not in data:
+        return jsonify({"detail": "No link provided"}), 400
 
-@app.post("/download/")
-def download_video(video: VideoLink):
     try:
-        yt = YouTube(video.link)
+        yt = YouTube(data['link'])
         stream = yt.streams.get_highest_resolution()
         download_url = stream.url
-        return {"download_link": download_url}
+        return jsonify({"download_link": download_url})
     except Exception as e:
-        raise HTTPException(status_code=400, detail="Failed to process the video link.")
+        return jsonify({"detail": "Failed to process the video link."}), 400
 
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    app.run(host="0.0.0.0", port=8000)
