@@ -1,23 +1,22 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Request
+from pydantic import BaseModel
 from pytube import YouTube
-from fastapi_limiter import FastAPILimiter
 
 app = FastAPI()
 
-# Configure rate limiting (for example, limit to 5 requests per minute)
+class VideoLink(BaseModel):
+    link: str
 
-@app.get("/download/")
-def download_video(link: str):
+@app.post("/download/")
+def download_video(video: VideoLink):
     try:
-        yt = YouTube(link)
+        yt = YouTube(video.link)
         stream = yt.streams.get_highest_resolution()
         download_url = stream.url
         return {"download_link": download_url}
     except Exception as e:
-        return e
         raise HTTPException(status_code=400, detail="Failed to process the video link.")
 
 if __name__ == "__main__":
     import uvicorn
-
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
