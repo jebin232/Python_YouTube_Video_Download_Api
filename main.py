@@ -18,7 +18,7 @@ def download_video():
     except Exception as e:
         if "HTTP Error 429" in str(e):
             print("Rate limit exceeded. Waiting before retrying...")
-            time.sleep(60)  # Wait for 60 seconds before retrying
+            time.sleep(10)  # Wait for 60 seconds before retrying
             return download_video()  # Retry the request
         else:
             return jsonify({"detail": "Failed to process the video link."}), 400
