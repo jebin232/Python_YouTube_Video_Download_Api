@@ -17,7 +17,7 @@ def download_video():
         return jsonify({"download_link": download_url})
     except Exception as e:
         print(f"Error: {e}")  # Logging error
-        return jsonify({"detail": "Failed to process the video link.{e}"}), 400
+        return jsonify(f"Error: {e}")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000)
