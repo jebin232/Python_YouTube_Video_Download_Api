@@ -1,1 +1,80 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Downloader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #28a745;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #ccc;
+        }
+        .download-link {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>YouTube Video Downloader</h1>
+        <input type="text" id="video-link" placeholder="Enter YouTube video link">
+        <button id="download-button" onclick="downloadVideo()">Download</button>
+        <div class="download-link" id="download-link"></div>
+    </div>
+    <script>
+        async function downloadVideo() {
+            const link = document.getElementById('video-link').value;
+            const button = document.getElementById('download-button');
+            button.disabled = true;
+
+            const response = await fetch('/download/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ link })
+            });
+
+            const result = await response.json();
+            button.disabled = false;
+
+            if (response.status === 200) {
+                const downloadLink = document.getElementById('download-link');
+                downloadLink.innerHTML = `<a href="${result.download_link}" target="_blank">Download Video</a>`;
+            } else {
+                alert(result.detail);
+            }
+        }
+    </script>
+</body>
+</html>
